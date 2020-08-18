@@ -1,0 +1,30 @@
+#this section reads the log file and gets the first letter of the last line
+# d for down or u for up
+while read p; do
+  last="$p"
+done <netStatus.log
+
+#I chose to ping google to check the network status
+Google=8.8.8.8
+
+#This checks the connection and saves the vaule as status
+if ping -c 2 $Google > /dev/null 2>&1
+then
+  status="u"
+else
+  status="d"
+fi
+
+#finally I compare the last recorded status in the log file to the current status. If the status are the same I do nothing and exit
+#if the status are different I write the status and date to the log file
+if [ "$status" == "${last:0:1}" ]
+then
+  echo nothing > /dev/null
+else
+  if [ "$status" == "d" ]
+  then
+     echo "down $(date)" >> /root/netStatus.log
+  else
+     echo "up $(date)" >> /root/netStatus.log
+fi
+fi
